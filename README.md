@@ -6,8 +6,9 @@ Chrome extension to clone any HTML article to a dedicated url and send the link 
 
 - Chrome
 - Email client
-- Vercel account
-- `config.js` file with your Vercel token:
+- Vercel account - `https://vercel.com/` 
+- Vercel token - `https://vercel.com/account/settings/tokens`
+- `config.js` file in the project root with your Vercel token defined:
 
 ```
 const CONFIG = {
