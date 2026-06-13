@@ -1,6 +1,6 @@
 # Send link
 
-Chrome extension to clone any HTML article to a dedicated url and send the link to your friends to read.
+Chrome extension to clone any HTML article to an open-access url and send the link to your friends/colleagues.
 
 ## Requirements
 
