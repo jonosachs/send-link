@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "send-link",
+  "version": "1.0.0",
+  "permissions": ["scripting", "activeTab"],
+  "action": {
+    "default_title": "Deploy page"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": ["https://api.vercel.com/*"]
+}
