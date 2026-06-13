@@ -21,10 +21,10 @@ const CONFIG = {
 - Open chrome extensions: `chrome://extensions/` 
 - Select `Load unpacked`
 - Load the project directory
-- Navigate to the page your want to clone
+- Navigate to the page you want to clone
 - Click the chrome extensions icon to the right of url, select `send-link` (pin for easy access)
 - Once the script runs, click OK on the popup to send the link via email
 
 ## Tips
 
-- Set the project Deployment Protection to 'None' in Vercel to enable anyone to access the link
+- Set the project Deployment Protection to 'None' in Vercel to enable link access without a Vercel account
