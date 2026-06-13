@@ -4,7 +4,11 @@
   "version": "1.0.0",
   "permissions": ["scripting", "activeTab"],
   "action": {
-    "default_title": "Deploy page"
+    "default_title": "Send Link Extension",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
   },
   "background": {
     "service_worker": "background.js"
