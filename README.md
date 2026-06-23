@@ -26,6 +26,5 @@ const CONFIG = {
 - Click the chrome extensions icon to the right of url, select `send-link` (pin for easy access)
 - Once the script runs, click OK on the popup to send the link via email
 
-## Tips
-
-- Set the project Deployment Protection to 'None' in Vercel to enable link access without a Vercel account
+> [!Tip]
+> Set the project Deployment Protection to 'None' in Vercel to enable link access without a Vercel account
