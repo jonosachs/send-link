@@ -1,3 +1,0 @@
-const CONFIG = {
-  VERCEL_TOKEN: "your_vercel_token",
-};
