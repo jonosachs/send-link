@@ -23,16 +23,8 @@ chrome.action.onClicked.addListener(async (tab) => {
 
   const url = `http://${deployment.url}`;
 
-  const [{ result: sendLink }] = await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: confirmSendLink,
-    args: [url],
-  });
-
-  if (sendLink) {
-    const email = createEmail(url);
-    await chrome.tabs.create({ url: email });
-  }
+  const email = createEmail(url);
+  await chrome.tabs.create({ url: email });
 });
 
 async function setBadgeText(text, tab) {
@@ -43,12 +35,49 @@ async function setBadgeText(text, tab) {
 }
 
 function confirmCopy() {
-  return confirm("Copy this webpage and upload it to Vercel to create a publicly accessible link?");
+  return confirm("Copy this webpage, upload it to Vercel to create a publicly accessible link, and open an email draft?");
 }
 
 function getHtml() {
   const clone = document.documentElement.cloneNode(true);
   clone.querySelectorAll("script").forEach((script) => script.remove());
+
+  // Resolve relative images, links, and inline CSS against the source page.
+  clone.querySelectorAll("base").forEach((base) => base.remove());
+  const base = document.createElement("base");
+  base.href = document.baseURI;
+  clone.querySelector("head").prepend(base);
+
+  // Save loaded stylesheet rules so readable CSS survives a change of origin.
+  const originalLinks = document.querySelectorAll('link[rel~="stylesheet"]');
+  const copiedLinks = clone.querySelectorAll('link[rel~="stylesheet"]');
+  originalLinks.forEach((link, index) => {
+    if (!link.sheet || link.disabled) return;
+    let rules;
+    try {
+      rules = Array.from(link.sheet.cssRules, (rule) => rule.cssText).join("\n");
+    } catch {
+      // Cross-origin stylesheets may forbid access; keep their original link.
+      return;
+    }
+    const stylesheetUrl = link.sheet.href || document.baseURI;
+    const resolveUrl = (url) => {
+      if (url.startsWith("#")) return url;
+      try { return new URL(url, stylesheetUrl).href; } catch { return url; }
+    };
+    const style = document.createElement("style");
+    style.textContent = rules
+      .replace(/url\(\s*(?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)'|([^\s)]*))\s*\)/gi,
+        (match, doubleQuoted, singleQuoted, unquoted) => {
+          const url = doubleQuoted ?? singleQuoted ?? unquoted;
+          // Preserve CSS escapes rather than treating them as URL characters.
+          return url.includes("\\") ? match : `url(${JSON.stringify(resolveUrl(url))})`;
+        })
+      .replace(/(@import\s+)(["'])([^"'\\]+)\2/gi,
+        (match, prefix, quote, url) => `${prefix}${JSON.stringify(resolveUrl(url))}`);
+    style.media = link.media;
+    copiedLinks[index].replaceWith(style);
+  });
 
   return `<!doctype html>\n${clone.outerHTML}`;
 }
@@ -83,10 +112,6 @@ async function deploy(html) {
 
   const deployment = await response.json();
   return deployment;
-}
-
-function confirmSendLink(url) {
-  return confirm(`✅ Page copied.\nURL: ${url}\nSend link?`);
 }
 
 function createEmail(url) {
